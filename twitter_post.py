@@ -3,7 +3,7 @@ from os import path
 import MeCab
 import json
 import re
-import markov_generator
+import markov_generator as mg
 
 
 PATH = path.dirname(path.abspath(__file__))
@@ -18,7 +18,6 @@ if __name__ == "__main__":
         resource_owner_key=token[2],
         resource_owner_secret=token[3]
     )
-
 
 def pre_processing(sentence):
     """
@@ -40,22 +39,34 @@ def get_tweets():
     #user_timelineからtweetを取得
     req = twitter.get(
         url = "https://api.twitter.com/1.1/statuses/home_timeline.json",
-        params = {"count": 100}
+        params = {"count": 200}
     )
-
-    #getしたtweetをいい具合に処理してから保存
+    tweets = json.loads(req.text)
+    for i in range(3):
+        req = twitter.get(
+            url = "https://api.twitter.com/1.1/statuses/home_timeline.json",
+            params = {"count": 200, "max_id": tweets[-1]["id"]}
+        )
+        tweets += json.loads(req.text)
     text = ""
-    if req.status_code == 200:
-        tweets = json.loads(req.text)
-        for tweet in tweets:
-            sentence = pre_processing(tweet["text"])
-            if sentence != "":
-                text += sentence + "\n"
+    #getしたtweetをいい具合に処理してから保存
+    for tweet in tweets:
+        sentence = pre_processing(tweet["text"])
+        if sentence != "":
+            text += sentence + "\n"
 
     #getしたtweetの文章のみを保存
     with open(PATH + "/text_file/tweets.txt", "w") as f:
         f.write(text)
+    return(text)
 
 
 if __name__ == "__main__":
-    get_tweets()
+    text = get_tweets()
+    with open(PATH + "/text_file/" + "Akyu_words.txt", "r") as f:
+        text += f.read()
+    sentence = mg.sentence_generation(text)
+    req = twitter.post(
+        url = "https://api.twitter.com/1.1/statuses/update.json",
+        params = {"status": sentence}
+    )
