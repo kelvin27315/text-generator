@@ -1,0 +1,45 @@
+from mastodon import Mastodon
+from os import path
+
+"""
+アプリケーションの登録とアカウントへの認証を行う
+"""
+PATH = path.dirname(path.abspath(__file__)) + "/"
+
+def create_app(file_name, api_url):
+    """
+    アプリケーションを登録する
+    """
+    Mastodon.create_app(
+        client_name = "稗田さん",
+        scopes = ["read", "write", "follow"],
+        website = "https://github.com/kelvin27315/text-generator",
+        to_file = PATH + "token/" + file_name,
+        api_base_url = api_url
+    )
+
+def log_in(client_file_neme, api_url, mail, password, user_file_name):
+    """
+    アカウントの認証を通す
+    """
+    mastodon = Mastodon(
+        client_id = PATH + "token/" + client_file_neme,
+        api_base_url = api_url
+    )
+    mastodon.log_in(
+        mail,
+        password,
+        scopes = ["read", "write", "follow"],
+        to_file = PATH + "token/" + user_file_name
+    )
+
+if __name__ == "__main__":
+    #gensokyo.town
+    create_app("clientcred.secret", "https://gensokyo.town")
+    log_in(
+        "clientcred.secret",
+        "https://gensokyo.town",
+        "*****@example.com",
+        "*****",
+        "usercred.secret"
+    )
