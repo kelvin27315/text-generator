@@ -42,7 +42,7 @@ def get_tweets():
         params = {"count": 200}
     )
     tweets = json.loads(req.text)
-    for i in range(3):
+    for i in range(2):
         req = twitter.get(
             url = "https://api.twitter.com/1.1/statuses/home_timeline.json",
             params = {"count": 200, "max_id": tweets[-1]["id"]}
