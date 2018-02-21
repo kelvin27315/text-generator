@@ -1,6 +1,5 @@
 from requests_oauthlib import OAuth1Session
 from os import path
-import MeCab
 import json
 import re
 import markov_generator as mg
@@ -23,13 +22,12 @@ def pre_processing(sentence):
     """
     余分なものを取り除いたり準備。
     """
-    #URI, LSEP, RSEP, 改行, ハッシュタグ, RT表記, replyの除去, 日本語文字間の空白の除去
-    sentence = re.sub(r"\[EoS\]", "", sentence)
-    sentence = re.sub(r"(https?|ftp)(:\/\/[-_\.!~*\'()a-zA-Z0-9;\/?:\@&=\+\$,%#]+)", "", sentence)
-    sentence = re.sub(r"[  \n\#]", "", sentence)
-    sentence = re.sub(r"RT @[_a-zA-Z0-9]+: ", "", sentence)
-    sentence = re.sub(r"@[_a-zA-Z0-9]+", "", sentence)
-    sentence = re.sub('([あ-んア-ン一-龥ー])\s+((?=[あ-んア-ン一-龥ー]))',r'\1\2', sentence)
+    sentence = re.sub(r"\[EoS\]", "", sentence)#文末を表すのに使うので消す
+    sentence = re.sub(r"(https?|ftp)(:\/\/[-_\.!~*\'()a-zA-Z0-9;\/?:\@&=\+\$,%#]+)", "", sentence)#URL
+    sentence = re.sub(r"[  \n\#]", "", sentence)#色々邪魔だったりする文字
+    sentence = re.sub(r"RT @[_a-zA-Z0-9]+: ", "", sentence)#RTされたtweetを取得するとくっついてくる
+    sentence = re.sub(r"@[_a-zA-Z0-9]+", "", sentence)#リプライ
+    sentence = re.sub('([あ-んア-ン一-龥ー])\s+((?=[あ-んア-ン一-龥ー]))',r'\1\2', sentence)#日本語文字間の空白除去
     return(sentence)
 
 def get_tweets():
@@ -63,7 +61,7 @@ def get_tweets():
 
 if __name__ == "__main__":
     text = get_tweets()
-    with open(PATH + "/text_file/" + "Akyu_words.txt", "r") as f:
+    with open(PATH + "/text_file/Akyu_words.txt", "r") as f:
         text += f.read()
     sentence = mg.sentence_generation(text)
     req = twitter.post(

@@ -4,7 +4,7 @@ import re
 
 def word_split(sentence):
     """
-    取得したtootのcontent類に分かち書きを行う。
+    引数に分かち書きかけて返すだけ
     """
     #MeCab(NEologd辞書使用)による分かち書き
     m = MeCab.Tagger("-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
@@ -17,6 +17,10 @@ def word_split(sentence):
 
 
 def markov_chain(words):
+    """
+    バイグラムでマルコフ連鎖を行い、文を作る。
+    """
+    #下準備でテーブルを作る
     markov = {}
     w1 = ""
     w2 = ""
@@ -25,31 +29,38 @@ def markov_chain(words):
             if (w1, w2) not in markov:
                 markov[(w1, w2)] = []
             markov[(w1, w2)].append(word)
-        w1, w2, = w2,  word
+        w1, w2, = w2, word
 
-    sentence = ""
-    #140字未満かつ、もとの分での文末([EoS]の目印)が最後に来ている場合、マルコフ連鎖での繋ぎを終了する
+    #単語を繋げるところ
     while True:
+        sentence = ""
         w1, w2 = random.choice(list(markov.keys()))
+        #140字超えたらやり直し
         while len(sentence) < 140:
             temp = random.choice(markov[(w1, w2)])
             sentence += temp
             w1, w2, = w2, temp
-            if sentence[-5:] == "[EoS]":
+            #もとの文での文末を引き当てたら確率で次の文を繋げるか決める
+            if temp == "[EoS]":
                 if random.random() > 0.3:
                     break
-        if len(sentence) < 140 and sentence[-5:] == "[EoS]":
+        #条件にあってたら[EoS]を取り除いて終了
+        if len(sentence) < 140 and temp == "[EoS]":
             sentence = re.sub(r"\[EoS\]", "", sentence)
-            #初手て[EoS]を引いてそのまま出てきてしまった場合はやり直し
             if sentence != "":
                 break
-        sentence = ""
     return(sentence)
 
+
 def sentence_generation(text):
+    """
+    文を作るよ
+    """
     words = ""
+    #1行(1文)ごとに分かち書きを行い、その末尾に[EoS]をつけて次のを繋げていく
     for sentence in text.splitlines():
         if sentence != "":
             words += word_split(sentence) + "[EoS] "
+    #実際に文を作るところ
     sentence = markov_chain(words)
     return(sentence)
