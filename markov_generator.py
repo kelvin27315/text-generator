@@ -20,7 +20,6 @@ def markov_chain(words):
     markov = {}
     w1 = ""
     w2 = ""
-    #w3 = ""
     for word in words.split():
         if w1 and w2:
             if (w1, w2) not in markov:
@@ -29,6 +28,7 @@ def markov_chain(words):
         w1, w2, = w2,  word
 
     sentence = ""
+    #140字未満かつ、もとの分での文末([EoS]の目印)が最後に来ている場合、マルコフ連鎖での繋ぎを終了する
     while True:
         w1, w2 = random.choice(list(markov.keys()))
         while len(sentence) < 140:
@@ -38,12 +38,12 @@ def markov_chain(words):
             if sentence[-5:] == "[EoS]":
                 if random.random() > 0.3:
                     break
-            #print(sentence)
         if len(sentence) < 140 and sentence[-5:] == "[EoS]":
-            #print(sentence)
-            break
+            sentence = re.sub(r"\[EoS\]", "", sentence)
+            #初手て[EoS]を引いてそのまま出てきてしまった場合はやり直し
+            if sentence != "":
+                break
         sentence = ""
-    sentence = re.sub(r"\[EoS\]", "", sentence)
     return(sentence)
 
 def sentence_generation(text):
