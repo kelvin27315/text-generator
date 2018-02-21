@@ -1,4 +1,6 @@
 # text-generator
 プログラムに文を作らせようという試み
 
-Mastodonの東方インスタンス [gensokyo.town](https://gensokyo.town) で動いているbot,稗田さん( [@hieda@gensokyo.town](https://gensokyo.town/@hieda) )のプログラムです。
+動いてる
+- [gensokyo.town](https://gensokyo.town) (Mastodonの東方インスタンス) 稗田さん( [@hieda@gensokyo.town](https://gensokyo.town/@hieda) )
+- [twitter](https://twitter.com) 稗田さん( [@Hieda_k](https://twitter.com/Hieda_k) )
