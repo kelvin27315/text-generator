@@ -96,18 +96,20 @@ def get_tweets():
         params = {"count": 200}
     )
     tweets = json.loads(req.text)
-    for i in range(2):
+    for i in range(3):
         req = twitter.get(
             url = "https://api.twitter.com/1.1/statuses/home_timeline.json",
-            params = {"count": 200, "max_id": tweets[-1]["id"]}
+            params = {"count": 200, "max_id": tweets[-1]["id"]-1}
         )
         tweets += json.loads(req.text)
+
     text = ""
     #getしたtweetをいい具合に処理してから保存
     for tweet in tweets:
-        sentence = pre_processing(tweet["text"])
-        if sentence != "":
-            text += sentence + "\n"
+        if "今日のツイライフ" in tweet["source"]:#いらないよね
+            sentence = pre_processing(tweet["text"])
+            if sentence != "":
+                text += sentence + "\n"
 
     #getしたtweetの文章のみを保存
     with open(PATH + "/text_file/tweets.txt", "w") as f:
@@ -117,9 +119,12 @@ def get_tweets():
 
 if __name__ == "__main__":
     text = get_tweets()
+    #twitterで取得したものに、阿求の台詞足すよ
     with open(PATH + "/text_file/Akyu_words.txt", "r") as f:
         text += f.read()
+    #文作るよ
     sentence = mg.sentence_generation(text)
+    #投稿
     req = twitter.post(
         url = "https://api.twitter.com/1.1/statuses/update.json",
         params = {"status": sentence}
