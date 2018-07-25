@@ -77,13 +77,13 @@ def pre_processing(sentence):
     """
     余分なものを取り除いたり準備。
     """
+    sentence = normalize_neologd(sentence)
     sentence = re.sub(r"\[EoS\]", "", sentence)#文末を表すのに使うので消す
     sentence = re.sub(r"(https?|ftp)(:\/\/[-_\.!~*\'()a-zA-Z0-9;\/?:\@&=\+\$,%#]+)", "", sentence)#URL
     sentence = re.sub(r"[  \n\#]", "", sentence)#色々邪魔だったりする文字
     sentence = re.sub(r"RT @[_a-zA-Z0-9]+: ", "", sentence)#RTされたtweetを取得するとくっついてくる
     sentence = re.sub(r"@[_a-zA-Z0-9]+", "", sentence)#リプライ
     sentence = re.sub('([あ-んア-ン一-龥ー])\s+((?=[あ-んア-ン一-龥ー]))',r'\1\2', sentence)#日本語文字間の空白除去
-    sentence = normalize_neologd(sentence)
     return(sentence)
 
 def get_tweets():
@@ -106,7 +106,7 @@ def get_tweets():
     text = ""
     #getしたtweetをいい具合に処理してから保存
     for tweet in tweets:
-        if "今日のツイライフ" in tweet["source"]:#いらないよね
+        if "今日のツイライフ" not in tweet["source"]:#いらないよね
             sentence = pre_processing(tweet["text"])
             if sentence != "":
                 text += sentence + "\n"

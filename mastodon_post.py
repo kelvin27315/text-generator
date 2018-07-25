@@ -72,6 +72,7 @@ def pre_processing(sentence):
     """
     余分なものを取り除いたりマルコフ連鎖取り扱うための準備。
     """
+    sentence = normalize_neologd(sentence)
     sentence = re.sub(r"\[EoS\]", "", sentence)#文末を表すのに使うので消す
     sentence = re.sub(r"<[^>]*?>", "", sentence)#HTMLタグ
     sentence = re.sub(r"(https?|ftp)(:\/\/[-_\.!~*\'()a-zA-Z0-9;\/?:\@&=\+\$,%#]+)", "", sentence)#URL
@@ -80,7 +81,6 @@ def pre_processing(sentence):
     sentence = re.sub('([あ-んア-ン一-龥ー])\s+((?=[あ-んア-ン一-龥ー]))',r'\1\2', sentence)#日本語文字間の空白除去
     sentence = re.sub(r":[a-zA-Z0-9_-]+:", "", sentence)#絵文字
     sentence = re.sub(r"@[_a-zA-Z0-9]+", "", sentence)#リプライ
-    sentence = normalize_neologd(sentence)
     return(sentence)
 
 def get_toots():
