@@ -2,17 +2,16 @@ import random
 import MeCab
 import re
 
-def word_split(sentence):
+def word_split(sentence, words):
     """
     引数に分かち書きかけて返すだけ
     """
     #MeCab(NEologd辞書使用)による分かち書き
     m = MeCab.Tagger("-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
-    words = ""
     #分かち書き
     for word in m.parse(sentence).splitlines():
         if word != "EOS":
-            words += word.split('\t')[0] + " "
+            words.append(word.split('\t')[0])
     return(words)
 
 
@@ -24,7 +23,7 @@ def markov_chain(words):
     markov = {}
     w1 = ""
     w2 = ""
-    for word in words.split():
+    for word in words:
         if w1 and w2:
             if (w1, w2) not in markov:
                 markov[(w1, w2)] = []
@@ -56,11 +55,12 @@ def sentence_generation(text):
     """
     文を作るよ
     """
-    words = ""
+    words = []
     #1行(1文)ごとに分かち書きを行い、その末尾に[EoS]をつけて次のを繋げていく
     for sentence in text.splitlines():
         if sentence != "":
-            words += word_split(sentence) + "[EoS] "
+            words = word_split(sentence,words)
+            words.append("[EoS]")
     #実際に文を作るところ
     sentence = markov_chain(words)
     return(sentence)
