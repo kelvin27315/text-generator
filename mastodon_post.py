@@ -9,13 +9,13 @@ import markov_generator as mg
 import Normalize_neologd as nn
 
 PATH = path.dirname(path.abspath(__file__))
-"""
+
 if __name__ == "__main__":
     mastodon = Mastodon(
         client_id = PATH + "/token/clientcred.secret",
         access_token = PATH + "/token/usercred.secret",
         api_base_url = "https://gensokyo.town")
-"""
+
 
 def get_toots():
     """
@@ -55,12 +55,10 @@ def get_toots():
 
 
 if __name__ == "__main__":
-    #get_toots()
-    for i in range(10):
-        with open(PATH + "/text_file/toots.txt", 'r') as f:
-            text = f.read()
-        with open(PATH + "/text_file/Akyu_words.txt", "r") as f:
-            text += f.read()
-        sentence = mg.sentence_generation(text)
-        print(sentence)
-        #mastodon.status_post(status = sentence, visibility = "unlisted")
+    get_toots()
+    with open(PATH + "/text_file/toots.txt", 'r') as f:
+        text = f.read()
+    with open(PATH + "/text_file/Akyu_words.txt", "r") as f:
+        text += f.read()
+    sentence = mg.sentence_generation(text)
+    mastodon.status_post(status = sentence, visibility = "unlisted")
