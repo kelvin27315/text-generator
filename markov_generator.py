@@ -2,20 +2,27 @@ import random
 import MeCab
 import re
 
-def word_split(sentence, words):
+def word_split(sentence, words, sentence_head):
     """
     引数に分かち書きかけて返すだけ
     """
     #MeCab(NEologd辞書使用)による分かち書き
     m = MeCab.Tagger("-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
     #分かち書き
+    one_sentence_head = []
+    count = 0
     for word in m.parse(sentence).splitlines():
         if word != "EOS":
             words.append(word.split('\t')[0])
-    return(words)
+            if count < 2:
+                one_sentence_head.append(word.split('\t')[0])
+            count += 1
+    if 1 < len(one_sentence_head):
+        sentence_head.append(tuple(one_sentence_head))
+    return(words, sentence_head)
 
 
-def markov_chain(words):
+def markov_chain(words, sentence_head):
     """
     バイグラムでマルコフ連鎖を行い、文を作る。
     """
@@ -33,9 +40,13 @@ def markov_chain(words):
     #単語を繋げるところ
     while True:
         sentence = ""
-        w1, w2 = random.choice(list(markov.keys()))
+        #ここのランダムチョイスをどこかの文の先頭にする。
+        w1, w2 = random.choice(sentence_head)
+        sentence += w1
+        sentence += w2
         #140字超えたらやり直し
         while len(sentence) < 140:
+            #はじめn個の単語の次の単語を選ぶ。同じ条件のをランダムに選ぶ
             temp = random.choice(markov[(w1, w2)])
             sentence += temp
             w1, w2, = w2, temp
@@ -45,8 +56,8 @@ def markov_chain(words):
                     break
         #条件にあってたら[EoS]を取り除いて終了
         if len(sentence) < 140 and temp == "[EoS]":
-            sentence = re.sub(r"\[EoS\]", "", sentence)
-            if sentence != "":
+            sentence = re.sub(r"\[EoS\]", ".", sentence)
+            if sentence != ".":
                 break
     return(sentence)
 
@@ -55,12 +66,14 @@ def sentence_generation(text):
     """
     文を作るよ
     """
+    sentence_head = []
     words = []
     #1行(1文)ごとに分かち書きを行い、その末尾に[EoS]をつけて次のを繋げていく
     for sentence in text.splitlines():
         if sentence != "":
-            words = word_split(sentence,words)
+            words, sentence_head = word_split(sentence,words,sentence_head)
             words.append("[EoS]")
     #実際に文を作るところ
-    sentence = markov_chain(words)
+    #print(sentence_head)
+    sentence = markov_chain(words, sentence_head)
     return(sentence)
