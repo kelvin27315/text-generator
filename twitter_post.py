@@ -5,6 +5,7 @@ import unicodedata
 import MeCab
 import json
 import re
+import Normalize_neologd as nn
 import markov_generator as mg
 
 PATH = path.dirname(path.abspath(__file__))
