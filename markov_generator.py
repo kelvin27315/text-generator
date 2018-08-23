@@ -13,6 +13,13 @@ def word_split(sentence, words, sentence_head):
     count = 0
     for word in m.parse(sentence).splitlines():
         if word != "EOS":
+            if word.split("\t")[1].split(",")[1] == "代名詞" and word.split("\t")[1].split(",")[2] == "一般":
+                word = re.sub("(おれ|オレ|われ|ワレ|わい|ワイ|ぼく|ボク|おら|オラ|おいら|オイラ|あたい|アタイ|あたし|わし|ワシ|わたくし)","わたし",word)
+                word = re.sub("(われら|我ら|われわれ|我々|ぼくら|僕ら|ぼくたち|僕達|僕たち)","私達",word)
+                word = re.sub("(俺|我|僕|儂|己|余)","私",word)
+                word = re.sub("(おまえ|オマエ|お前|てめえ|てめぇ)","あんた",word)
+                word = re.sub("(きみ|キミ)","あなた",word)
+                word = re.sub("君","貴方",word)
             words.append(word.split('\t')[0])
             if count < 2:
                 one_sentence_head.append(word.split('\t')[0])
