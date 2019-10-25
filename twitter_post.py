@@ -44,6 +44,7 @@ def get_tweets():
     for tweet in tweets:
         if "今日のツイライフ" not in tweet["source"]:#いらないよね
             sentence = nn.pre_processing(tweet["text"])
+            sentence = re.sub('RT:', '', sentence)
             if sentence != "":
                 text += sentence + "\n"
 
