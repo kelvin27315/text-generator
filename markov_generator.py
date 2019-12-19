@@ -1,33 +1,27 @@
+import multiprocessing as mp
 import random
 import MeCab
 import re
+m = MeCab.Tagger("-d /usr/lib/mecab/dic/mecab-ipadic-neologd")
 
-def word_split(sentence, words, sentence_head):
+def wording_conversion(word):
+    word = re.sub("(おれ|オレ|われ|ワレ|わい|ワイ|ぼく|ボク|おら|オラ|おいら|オイラ|あたい|アタイ|あたし|わし|ワシ|わたくし)","わたし",word)
+    word = re.sub("(われら|我ら|われわれ|我々|ぼくら|僕ら|ぼくたち|僕達|僕たち)","私達",word)
+    word = re.sub("(俺|我|僕|儂|己|余)","私",word)
+    word = re.sub("(おまえ|オマエ|お前|てめえ|てめぇ)","あんた",word)
+    word = re.sub("(きみ|キミ)","あなた",word)
+    word = re.sub("君","貴方",word)
+    return(word)
+
+def word_split(sentence):
     """
     引数に分かち書きかけて返すだけ
     """
-    #MeCab(NEologd辞書使用)による分かち書き
-    m = MeCab.Tagger("-d /usr/lib/mecab/dic/mecab-ipadic-neologd")
     #分かち書き
-    one_sentence_head = []
-    count = 0
-    for word in m.parse(sentence).splitlines():
-        if word != "EOS":
-            if word.split("\t")[1].split(",")[1] == "代名詞" and word.split("\t")[1].split(",")[2] == "一般":
-                word = re.sub("(おれ|オレ|われ|ワレ|わい|ワイ|ぼく|ボク|おら|オラ|おいら|オイラ|あたい|アタイ|あたし|わし|ワシ|わたくし)","わたし",word)
-                word = re.sub("(われら|我ら|われわれ|我々|ぼくら|僕ら|ぼくたち|僕達|僕たち)","私達",word)
-                word = re.sub("(俺|我|僕|儂|己|余)","私",word)
-                word = re.sub("(おまえ|オマエ|お前|てめえ|てめぇ)","あんた",word)
-                word = re.sub("(きみ|キミ)","あなた",word)
-                word = re.sub("君","貴方",word)
-            words.append(word.split('\t')[0])
-            if count < 2:
-                one_sentence_head.append(word.split('\t')[0])
-            count += 1
-    if 1 < len(one_sentence_head):
-        sentence_head.append(tuple(one_sentence_head))
+    words = [wording_conversion(word.split("\t")[0]) if word.split("\t")[1].split(",")[1:3] == ["代名詞", "一般"] else word.split("\t")[0] for word in m.parse(sentence).splitlines()[0:-1]]
+    words.append("[EoS]")
+    sentence_head = tuple(words[0:2])
     return(words, sentence_head)
-
 
 def markov_chain(words, sentence_head):
     """
@@ -68,19 +62,20 @@ def markov_chain(words, sentence_head):
                 break
     return(sentence)
 
-
 def sentence_generation(text):
     """
     文を作るよ
     """
     sentence_head = []
     words = []
+    sentence_he_app = sentence_head.append
+    words_ext = words.extend
     #1行(1文)ごとに分かち書きを行い、その末尾に[EoS]をつけて次のを繋げていく
-    for sentence in text.splitlines():
-        if sentence != "":
-            words, sentence_head = word_split(sentence,words,sentence_head)
-            words.append("[EoS]")
+    with mp.Pool(mp.cpu_count()-2) as p:
+        for result in p.imap_unordered(word_split,text.splitlines()):
+            if result[0] != 1:
+                words_ext(result[0])
+                sentence_he_app(result[1])
     #実際に文を作るところ
-    #print(sentence_head)
     sentence = markov_chain(words, sentence_head)
     return(sentence)
