@@ -25,7 +25,7 @@ def word_split(sentence):
 
 def markov_chain(words, sentence_head):
     """
-    バイグラムでマルコフ連鎖を行い、文を作る。
+    トライグラムでマルコフ連鎖を行い、文を作る。
     """
     #下準備でテーブルを作る
     markov = {}
