@@ -7,8 +7,7 @@ def word_split(sentence, words, sentence_head):
     引数に分かち書きかけて返すだけ
     """
     #MeCab(NEologd辞書使用)による分かち書き
-    #m = MeCab.Tagger("-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
-    m = MeCab.Tagger()
+    m = MeCab.Tagger("-d /usr/lib/mecab/dic/mecab-ipadic-neologd")
     #分かち書き
     one_sentence_head = []
     count = 0
