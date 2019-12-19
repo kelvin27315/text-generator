@@ -57,7 +57,7 @@ def markov_chain(words, sentence_head):
                     break
         #条件にあってたら[EoS]を取り除いて終了
         if len(sentence) < 140 and temp == "[EoS]":
-            sentence = re.sub(r"\[EoS\]", ".", sentence)
+            sentence = re.sub(r"\[EoS\]", "", sentence)
             if sentence != ".":
                 break
     return(sentence)
