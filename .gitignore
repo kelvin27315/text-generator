@@ -2,3 +2,4 @@ token/
 text_file/
 __pycache__/
 .venv/
+.vscode
