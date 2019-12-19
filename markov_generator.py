@@ -29,13 +29,12 @@ def markov_chain(words, sentence_head):
     """
     #下準備でテーブルを作る
     markov = {}
-    w1 = ""
-    w2 = ""
-    for word in words:
-        if w1 and w2:
-            if (w1, w2) not in markov:
-                markov[(w1, w2)] = []
-            markov[(w1, w2)].append(word)
+    w1 = words[0]
+    w2 = words[1]
+    for word in words[2:]:
+        if (w1, w2) not in markov:
+            markov[(w1, w2)] = []
+        markov[(w1, w2)].append(word)
         w1, w2, = w2, word
 
     #単語を繋げるところ
