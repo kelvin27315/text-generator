@@ -47,18 +47,15 @@ def markov_chain(words, sentence_head):
         #140字超えたらやり直し
         while len(sentence) < 140:
             #はじめn個の単語の次の単語を選ぶ。同じ条件のをランダムに選ぶ
-            temp = random.choice(markov[(w1, w2)])
-            sentence += temp
-            w1, w2, = w2, temp
+            w1, w2 = w2, random.choice(markov[(w1, w2)])
+            sentence += w2
             #もとの文での文末を引き当てたら確率で次の文を繋げるか決める
-            if temp == "[EoS]":
-                if random.random() > 0.3:
-                    break
-        #条件にあってたら[EoS]を取り除いて終了
-        if len(sentence) < 140 and temp == "[EoS]":
-            sentence = re.sub(r"\[EoS\]", "", sentence)
-            if sentence != ".":
+            if w2 == "[EoS]" and random.random() > 0.3:
                 break
+        if len(sentence) < 140:
+            #[EoS]を取り除いて終了
+            sentence = re.sub(r"\[EoS\]", "", sentence)
+            break
     return(sentence)
 
 def sentence_generation(text):
