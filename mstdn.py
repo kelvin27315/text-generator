@@ -7,7 +7,7 @@ from time import sleep
 
 
 class Ponytail_Counter(Mastodon):
-    def __init__(self, id, deltaday=1, url):
+    def __init__(self, id, url, deltaday=1):
         self.path = Path(__file__).parent.resolve()
         self.id = id
 

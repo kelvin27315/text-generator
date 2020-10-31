@@ -2,7 +2,7 @@ from textgenerator.markov import MarkovChainForTextGen
 from mstdn import Ponytail_Counter
 
 def main():
-    kasaki = Ponytail_Counter(id=22674, deltaday=1, url="https://example.com")
+    kasaki = Ponytail_Counter(id=22674, url="https://example.com", deltaday=1)
     with open("text.txt", "r") as f:
         text = f.read()
     markov = MarkovChainForTextGen(text, 3)
