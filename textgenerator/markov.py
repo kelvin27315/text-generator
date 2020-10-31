@@ -11,8 +11,8 @@ class MarkovChainForTextGen(TextGenerator):
 
     def get_markov_table(self):
         markov = {}
-        state = tuple([self.words[i] for i in range(self.n-1)])
-        for word in self.words[self.n-1:]:
+        state = tuple([self.words[i] for i in range(self.ngram-1)])
+        for word in self.words[self.ngram-1:]:
             if state not in markov:
                 markov[state] = []
             markov[state].append(word)
