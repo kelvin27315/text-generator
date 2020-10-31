@@ -1,11 +1,13 @@
-from text_generator import TextGenerator
+from .text_generator import TextGenerator
+import multiprocessing as mp
 import random
+import re
 
 
 class MarkovChainForTextGen(TextGenerator):
-    def __init__(self, text: str, n: int, mpara="", cpu_count=mp.cpu_count()-1):
-        super(TextGenerator, self).__init__(text, n, mpara=, cpu_count)
-        self.markov = self.get_markov_table()
+    def __init__(self, text, ngram, cpu_count=mp.cpu_count()-1):
+        super().__init__(text, ngram, cpu_count)
+        self.get_markov_table()
 
     def get_markov_table(self):
         markov = {}
@@ -14,7 +16,7 @@ class MarkovChainForTextGen(TextGenerator):
             if state not in markov:
                 markov[state] = []
             markov[state].append(word)
-            state = [node for node in state[1:]]
+            state = list(state[1:])
             state.append(word)
             state = tuple(state)
         self.markov = markov
@@ -33,15 +35,11 @@ class MarkovChainForTextGen(TextGenerator):
                 #新規単語取得
                 word = random.choice(self.markov[state])
                 sentence += word
-                if word == "[EoS]" and random.random() > 0.7:
+                if word == "[EoS]":
                     break
-                else:
-                    state = random.choice(self.sentence_heads)
-                    for node in state:
-                        sentence += node
 
                 #状態の更新
-                state = [node for node in state[1:]]
+                state = list(state[1:])
                 state.append(word)
                 state = tuple(state)
 
