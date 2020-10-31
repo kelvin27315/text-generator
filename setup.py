@@ -1,45 +1,13 @@
-from mastodon import Mastodon
-from os import path
+from setuptools import setup, find_packages
 
-"""
-アプリケーションの登録とアカウントへの認証を行う
-"""
-PATH = path.dirname(path.abspath(__file__)) + "/"
+with open("README.md", "r") as f:
+    long_description = f.read()
 
-def create_app(file_name, api_url):
-    """
-    アプリケーションを登録する
-    """
-    Mastodon.create_app(
-        client_name = "稗田さん",
-        scopes = ["read", "write", "follow"],
-        website = "https://github.com/kelvin27315/text-generator",
-        to_file = PATH + "token/" + file_name,
-        api_base_url = api_url
-    )
-
-def log_in(client_file_neme, api_url, mail, password, user_file_name):
-    """
-    アカウントの認証を通す
-    """
-    mastodon = Mastodon(
-        client_id = PATH + "token/" + client_file_neme,
-        api_base_url = api_url
-    )
-    mastodon.log_in(
-        mail,
-        password,
-        scopes = ["read", "write", "follow"],
-        to_file = PATH + "token/" + user_file_name
-    )
-
-if __name__ == "__main__":
-    #gensokyo.town
-    create_app("clientcred.secret", "https://gensokyo.town")
-    log_in(
-        "clientcred.secret",
-        "https://gensokyo.town",
-        "*****@example.com",
-        "*****",
-        "usercred.secret"
-    )
+setup(
+    name="text-generator",
+    author="kelvin",
+    description="",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(where=text-generator)
+)
