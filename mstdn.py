@@ -38,5 +38,5 @@ class Ponytail_Counter(Mastodon):
                     if len(temp) != 0:
                         text += "\n{}".format(temp)
 
-        with open("text.txt", "a") as f:
+        with open(self.path/"text.txt", "a") as f:
             f.write(text[1:])
