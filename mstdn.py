@@ -7,7 +7,7 @@ from time import sleep
 
 
 class Ponytail_Counter(Mastodon):
-    def __init__(self, id, deltaday=1, url):
+    def __init__(self, id, url, deltaday=1):
         self.path = Path(__file__).parent.resolve()
         self.id = id
 
@@ -38,5 +38,5 @@ class Ponytail_Counter(Mastodon):
                     if len(temp) != 0:
                         text += "\n{}".format(temp)
 
-        with open("text.txt", "a") as f:
+        with open(self.path/"text.txt", "a") as f:
             f.write(text[1:])
